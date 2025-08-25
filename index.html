@@ -2,45 +2,101 @@
 <html>
 <head>
     <title>For You</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
-        body { 
-            margin: 0; 
-            padding: 0; 
-            background: black; 
-            color: white; 
-            font-family: sans-serif; 
-            text-align: center; 
-            height: 100vh; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #000000;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            text-align: center;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            touch-action: manipulation;
         }
-        audio { 
-            display: none; 
+        .message {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50px;
+            padding: 15px 30px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+        audio {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div>
-        <p>Playing your message...</p>
-    </div>
+    <div class="message" id="message">Ready to play your message</div>
+    <button class="button" id="playButton">Play Voice</button>
 
-    <audio id="player" autoplay>
-        <source src="http://shenqiwunet.com/mp3/202110/2/10.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="audioPlayer"></audio>
 
     <script>
-        // 替换为你刚才复制的音频直链
+        // ==================== 【在这里设置你的音频链接】 ====================
         const audioUrl = "http://shenqiwunet.com/mp3/202110/2/10.mp3";
-        document.getElementById('player').src = audioUrl;
+        // ==================== 【替换上面的链接】 ====================
         
-        document.getElementById('player').play().catch(error => {
-            document.body.innerHTML = '<p>Click to play</p>';
-            document.body.onclick = () => {
-                document.getElementById('player').play();
-                document.body.innerHTML = '<p>Playing...</p>';
-            };
+        const audioPlayer = document.getElementById('audioPlayer');
+        const message = document.getElementById('message');
+        const playButton = document.getElementById('playButton');
+        
+        // 设置音频源
+        audioPlayer.src = audioUrl;
+        
+        // 播放按钮点击事件
+        playButton.addEventListener('click', function() {
+            playAudio();
         });
+        
+        // 点击页面任意位置也可以播放
+        document.body.addEventListener('click', function(event) {
+            if (event.target !== playButton) {
+                playAudio();
+            }
+        });
+        
+        function playAudio() {
+            audioPlayer.play()
+                .then(() => {
+                    message.textContent = "Playing...";
+                    playButton.style.display = 'none';
+                })
+                .catch(error => {
+                    message.textContent = "Please tap to play";
+                    console.log('Playback failed:', error);
+                });
+        }
+        
+        // 音频结束事件
+        audioPlayer.addEventListener('ended', function() {
+            message.textContent = "Playback completed ❤️";
+        });
+        
+        // 音频错误事件
+        audioPlayer.addEventListener('error', function() {
+            message.textContent = "Playback error";
+            playButton.textContent = "Try Again";
+        });
+        
+        // 尝试自动播放（某些浏览器可能允许）
+        setTimeout(() => {
+            audioPlayer.play().catch(() => {
+                // 自动播放失败是正常的，显示播放按钮
+                message.textContent = "Tap anywhere to play";
+            });
+        }, 1000);
     </script>
 </body>
 </html>
