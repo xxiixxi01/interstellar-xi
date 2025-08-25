@@ -1,139 +1,46 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>For You</title>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            background: #000000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            color: #ffffff;
-            overflow: hidden;
+        body { 
+            margin: 0; 
+            padding: 0; 
+            background: black; 
+            color: white; 
+            font-family: sans-serif; 
+            text-align: center; 
+            height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
         }
-        
-        .container {
-            text-align: center;
-            padding: 2rem;
-        }
-        
-        .status {
-            font-size: 1.1rem;
-            margin: 2rem 0;
-            color: #cccccc;
-        }
-        
-        .progress-container {
-            width: 80%;
-            max-width: 300px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 2px;
-            margin: 2rem auto;
-            overflow: hidden;
-        }
-        
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background: #ffffff;
-            border-radius: 2px;
-            transition: width 0.3s ease;
-        }
-        
-        .hint {
-            font-size: 0.9rem;
-            color: #666666;
-            margin-top: 2rem;
-            opacity: 0.7;
-        }
-        
-        @media (max-width: 768px) {
-            .status {
-                font-size: 1rem;
-                margin: 1.5rem 0;
-            }
-            
-            .progress-container {
-                width: 70%;
-            }
+        audio { 
+            display: none; 
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="status" id="status">准备播放...</div>
-        <div class="progress-container">
-            <div class="progress-bar" id="progressBar"></div>
-        </div>
-        <div class="hint" id="hint"></div>
+    <div>
+        <p>Playing your message...</p>
     </div>
 
-    <audio id="audioPlayer"></audio>
+    <audio id="player" autoplay>
+        <source src="http://shenqiwunet.com/mp3/202110/2/10.mp3" type="audio/mpeg">
+    </audio>
 
     <script>
-        // ==================== 【在这里更新音频链接】 ====================
-        const AUDIO_URL = "http://shenqiwunet.com/mp3/202110/2/10.mp3";
-        // ==================== 【只需要修改上面这行】 ====================
+        // 替换为你刚才复制的音频直链
+        const audioUrl = "http://shenqiwunet.com/mp3/202110/2/10.mp3";
+        document.getElementById('player').src = audioUrl;
         
-        function initPlayer() {
-            const audio = document.getElementById('audioPlayer');
-            const status = document.getElementById('status');
-            const progressBar = document.getElementById('progressBar');
-            const hint = document.getElementById('hint');
-            
-            audio.src = AUDIO_URL;
-            
-            audio.addEventListener('loadeddata', function() {
-                status.textContent = '正在播放';
-            });
-            
-            audio.addEventListener('timeupdate', function() {
-                const progress = (audio.currentTime / audio.duration) * 100;
-                progressBar.style.width = progress + '%';
-            });
-            
-            audio.addEventListener('ended', function() {
-                status.textContent = '播放完成';
-                progressBar.style.width = '100%';
-                hint.textContent = '';
-            });
-            
-            audio.addEventListener('error', function(e) {
-                status.textContent = '播放出错';
-                hint.textContent = '请检查网络连接后重试';
-                console.error('音频加载错误:', e);
-            });
-            
-            // 尝试自动播放
-            const playAudio = function() {
-                audio.play().then(() => {
-                    status.textContent = '正在播放';
-                    hint.textContent = '';
-                }).catch(error => {
-                    status.textContent = '点击页面开始播放';
-                    hint.textContent = '轻点屏幕任意位置';
-                    
-                    // 点击页面任意位置开始播放
-                    document.body.addEventListener('click', function onClick() {
-                        audio.play();
-                        document.body.removeEventListener('click', onClick);
-                    }, { once: true });
-                });
+        document.getElementById('player').play().catch(error => {
+            document.body.innerHTML = '<p>Click to play</p>';
+            document.body.onclick = () => {
+                document.getElementById('player').play();
+                document.body.innerHTML = '<p>Playing...</p>';
             };
-            
-            // 页面加载后尝试播放
-            window.addEventListener('load', playAudio);
-        }
-        
-        // 初始化播放器
-        initPlayer();
+        });
     </script>
 </body>
 </html>
